@@ -11,12 +11,15 @@ Key parts:
 - `app/`: Next.js App Router pages
 - `components/`: reusable dashboard components
 - `lib/api.ts`: backend API client
+- `lib/auth.tsx`: local JWT auth provider
 - `lib/types.ts`: shared frontend TypeScript API shapes
 - `lib/format.ts`: display formatting helpers
 
 Frontend routes:
 
 - `/`: dashboard
+- `/login`: login
+- `/signup`: signup
 - `/properties`: property listings
 - `/properties/new`: create property
 - `/properties/[id]`: property workspace
@@ -26,6 +29,8 @@ Frontend routes:
 - `/admin`: moderation page
 
 The frontend uses `NEXT_PUBLIC_API_BASE_URL` to call the backend.
+
+Role-aware navigation and route guards are implemented in the frontend for local MVP flows. Backend authorization remains the source of truth for protected actions.
 
 ## Backend Architecture
 
@@ -42,6 +47,12 @@ Key parts:
 - `app/services/`: upload storage and AI summary placeholder services
 - `scripts/seed_db.py`: local sample data entrypoint
 
+Auth modules:
+
+- `app/api/routes/auth.py`: signup, login, current user
+- `app/core/security.py`: bcrypt password hashing and JWT helpers
+- `app/api/deps.py`: current-user and role dependencies
+
 FastAPI automatically exposes:
 
 - Swagger: `http://localhost:8000/docs`
@@ -54,6 +65,7 @@ The database uses UUID primary keys and timestamp columns on major entities.
 Core tables:
 
 - `users`: local placeholder users
+- user roles: `admin`, `seller`, `buyer`, `verified_agent`
 - `properties`: sale, lease, and sale-or-lease listings
 - `property_documents`: uploaded land document metadata
 - `agents`: verified agent profiles
@@ -70,6 +82,18 @@ Important relationships:
 - A verified agent can be assigned to many properties.
 
 The current local MVP uses SQLAlchemy `create_all` plus idempotent local schema helpers. The structure is ready for Alembic migrations later, but migration files are not included yet.
+
+## Authentication And Roles
+
+The MVP uses local email/password signup, bcrypt password hashes, and bearer JWT access tokens. The seeded demo users cover the four supported roles: admin, seller, buyer, and verified agent.
+
+Protected actions include:
+
+- Admin-only listing approval and verification
+- Admin-only agent approval
+- Seller/admin property ownership updates
+- Seller/admin document upload for owned properties
+- Owner/admin/assigned-agent AI summary generation
 
 ## Document Upload Workflow
 
@@ -114,7 +138,7 @@ Only verified agents can be assigned through the backend property-agent endpoint
 
 ## Admin Moderation Workflow
 
-The admin page is local MVP only and has no authentication.
+The admin page is protected by the frontend route guard, and the backend requires the `admin` role for moderation actions.
 
 It supports:
 
@@ -139,4 +163,3 @@ Named volumes:
 - `postgres_data`
 
 Local uploads are bind-mounted from `backend/uploads/`.
-

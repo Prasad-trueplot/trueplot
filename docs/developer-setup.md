@@ -104,7 +104,17 @@ DATABASE_URL=postgresql+psycopg://trueplot_user:trueplot_pass@localhost:5432/tru
 FRONTEND_ORIGIN=http://localhost:3000
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
+JWT_SECRET_KEY=change-this-local-development-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
 ```
+
+Seeded demo accounts use password `trueplot123`:
+
+- `admin@trueplot.local`
+- `owner@example.com`
+- `agent@example.com`
+- `buyer@example.com`
 
 ## Database
 
@@ -188,6 +198,13 @@ Fix:
 - Confirm backend health: `curl http://localhost:8000/health`.
 - Confirm frontend env: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`.
 
+Login returns 401:
+
+Fix:
+
+- Re-run seed data with `docker compose exec backend python -m scripts.seed_db`.
+- Confirm the password is `trueplot123` for seeded demo accounts.
+
 Upload endpoint fails:
 
 Fix:
@@ -206,4 +223,3 @@ Fix:
 ```bash
 docker compose exec backend python -c "from app.db.init_db import create_database_tables; create_database_tables()"
 ```
-

@@ -24,6 +24,43 @@ Response:
 {"status":"ok","service":"trueplot-backend"}
 ```
 
+## Auth APIs
+
+Endpoints:
+
+- `POST /auth/signup`
+- `POST /auth/login`
+- `GET /auth/me`
+
+Signup:
+
+```bash
+curl -X POST http://localhost:8000/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "seller-demo@example.com",
+    "full_name": "Seller Demo",
+    "phone": "+91-9000000000",
+    "role": "seller",
+    "password": "trueplot123"
+  }'
+```
+
+Login:
+
+```bash
+curl -X POST http://localhost:8000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@trueplot.local","password":"trueplot123"}'
+```
+
+Use the returned `access_token` as a bearer token:
+
+```bash
+curl http://localhost:8000/auth/me \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN"
+```
+
 ## Property APIs
 
 Endpoints:
@@ -41,6 +78,7 @@ Create property:
 ```bash
 curl -X POST http://localhost:8000/properties \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN" \
   -d '{
     "owner_id": "REPLACE_WITH_USER_UUID",
     "title": "Verified Guntur land parcel",
@@ -72,6 +110,7 @@ Approve listing:
 ```bash
 curl -X PATCH http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/status \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{"listing_status":"active"}'
 ```
 
@@ -80,6 +119,7 @@ Verify listing:
 ```bash
 curl -X PATCH http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/verification \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{"is_verified":true,"verification_status":"verified"}'
 ```
 
@@ -88,6 +128,7 @@ Assign verified agent:
 ```bash
 curl -X PATCH http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/agent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{"agent_id":"REPLACE_WITH_VERIFIED_AGENT_UUID"}'
 ```
 
@@ -96,6 +137,7 @@ Remove agent:
 ```bash
 curl -X PATCH http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/agent \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{"agent_id":null}'
 ```
 
@@ -112,6 +154,7 @@ Upload document:
 
 ```bash
 curl -X POST http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/documents \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN" \
   -F document_type=ec \
   -F notes="Initial EC upload" \
   -F file=@/path/to/ec.pdf
@@ -128,6 +171,7 @@ Review document:
 ```bash
 curl -X PATCH http://localhost:8000/documents/REPLACE_WITH_DOCUMENT_UUID/review \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{
     "status": "approved",
     "is_verified": true,
@@ -148,6 +192,7 @@ Generate AI-assisted document summary:
 ```bash
 curl -X POST http://localhost:8000/documents/REPLACE_WITH_DOCUMENT_UUID/ai-summary \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN" \
   -d '{}'
 ```
 
@@ -179,6 +224,7 @@ Create agent:
 ```bash
 curl -X POST http://localhost:8000/agents \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN" \
   -d '{
     "user_id": "REPLACE_WITH_USER_UUID",
     "license_number": "AP-AGENT-100",
@@ -198,6 +244,7 @@ Approve agent:
 ```bash
 curl -X PATCH http://localhost:8000/agents/REPLACE_WITH_AGENT_UUID/verification \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ADMIN_ACCESS_TOKEN" \
   -d '{"is_verified":true}'
 ```
 
@@ -223,3 +270,4 @@ Admin actions:
 - Verify property: `PATCH /properties/{property_id}/verification`
 - Approve agent: `PATCH /agents/{agent_id}/verification`
 
+These endpoints require an admin bearer token.

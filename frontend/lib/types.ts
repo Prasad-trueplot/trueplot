@@ -101,6 +101,26 @@ export type HealthResponse = {
   service: string;
 };
 
+export type UserRole = "admin" | "seller" | "buyer" | "verified_agent";
+
+export type User = {
+  id: string;
+  email: string;
+  full_name: string;
+  phone: string | null;
+  role: UserRole;
+  is_active: boolean;
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AuthToken = {
+  access_token: string;
+  token_type: "bearer";
+  user: User;
+};
+
 export type Agent = {
   id: string;
   user_id: string;

@@ -17,6 +17,7 @@ venv/
 .DS_Store
 coverage/
 htmlcov/
+*.tsbuildinfo
 
 backend/uploads/*
 !backend/uploads/.gitkeep

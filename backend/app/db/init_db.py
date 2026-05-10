@@ -1,6 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.db import all_models  # noqa: F401
 from app.db.base import Base
 from app.db.session import engine
 
@@ -127,6 +128,19 @@ def ensure_local_property_schema() -> None:
         """
         ALTER TABLE agents
         ADD COLUMN IF NOT EXISTS supports_nri boolean NOT NULL DEFAULT false
+        """,
+        """
+        DO $$
+        BEGIN
+            CREATE TYPE user_role AS ENUM ('ADMIN', 'SELLER', 'BUYER', 'VERIFIED_AGENT');
+        EXCEPTION WHEN duplicate_object THEN
+            NULL;
+        END $$;
+        """,
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS hashed_password varchar(255)",
+        """
+        ALTER TABLE users
+        ADD COLUMN IF NOT EXISTS role user_role NOT NULL DEFAULT 'BUYER'
         """,
     ]
 

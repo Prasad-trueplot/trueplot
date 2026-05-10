@@ -3,9 +3,11 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_current_user, get_db, require_admin
 from app.crud import property_crud, property_document_crud
 from app.models.enums import DocumentStatus, DocumentType
+from app.models.enums import UserRole
+from app.models.user import User
 from app.schemas.property_document import (
     PropertyDocumentCreate,
     PropertyDocumentRead,
@@ -29,6 +31,7 @@ async def upload_property_document(
     uploaded_by_user_id: UUID | None = Form(default=None),
     notes: str | None = Form(default=None),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     property_record = property_crud.get(db, property_id)
     if property_record is None:
@@ -37,10 +40,16 @@ async def upload_property_document(
             detail="Property not found",
         )
 
+    if current_user.role != UserRole.ADMIN and property_record.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the property owner or admin can upload documents",
+        )
+
     stored_file = await save_upload_file(file)
     document = PropertyDocumentCreate(
         property_id=property_id,
-        uploaded_by_user_id=uploaded_by_user_id,
+        uploaded_by_user_id=uploaded_by_user_id or current_user.id,
         document_type=document_type,
         file_name=stored_file.original_filename,
         original_filename=stored_file.original_filename,
@@ -104,6 +113,7 @@ def update_document_review(
     document_id: UUID,
     payload: PropertyDocumentReviewUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     document = property_document_crud.get(db, document_id)
     if document is None:
@@ -121,4 +131,3 @@ def update_document_review(
             "admin_review_notes": payload.admin_review_notes,
         },
     )
-

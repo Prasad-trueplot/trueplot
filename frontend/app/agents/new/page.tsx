@@ -4,14 +4,17 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/AppShell";
+import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock } from "@/components/StateBlock";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 import type { AgentCreatePayload } from "@/lib/types";
 
 const inputClass = "w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
 
 export default function NewAgentPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [sampleUserId, setSampleUserId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +22,10 @@ export default function NewAgentPage() {
   useEffect(() => {
     async function loadSampleUser() {
       try {
+        if (user) {
+          setSampleUserId(user.id);
+          return;
+        }
         const properties = await api.listProperties();
         setSampleUserId(properties[0]?.owner_id ?? "");
       } catch {
@@ -27,7 +34,7 @@ export default function NewAgentPage() {
     }
 
     void loadSampleUser();
-  }, []);
+  }, [user]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,11 +66,12 @@ export default function NewAgentPage() {
 
   return (
     <AppShell>
-      <h1 className="text-3xl font-semibold">Agent onboarding</h1>
-      <p className="mt-2 text-sm text-slate-600">
-        Create a local MVP agent profile for admin verification. KYC provider
-        integration is intentionally not included.
-      </p>
+      <AuthGuard roles={["admin", "verified_agent"]}>
+        <h1 className="text-3xl font-semibold">Agent onboarding</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Create a local MVP agent profile for admin verification. KYC provider
+          integration is intentionally not included.
+        </p>
 
       <form
         onSubmit={handleSubmit}
@@ -96,7 +104,8 @@ export default function NewAgentPage() {
         >
           {isSaving ? "Creating..." : "Create agent"}
         </button>
-      </form>
+        </form>
+      </AuthGuard>
     </AppShell>
   );
 }
@@ -130,4 +139,3 @@ function stringOrNull(value: FormDataEntryValue | null): string | null {
   const stringValue = String(value ?? "").trim();
   return stringValue ? stringValue : null;
 }
-

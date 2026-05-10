@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 import { AppShell } from "@/components/AppShell";
+import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
 import { StatusBadge } from "@/components/StatusBadge";
 import { api } from "@/lib/api";
@@ -71,13 +72,15 @@ export default function AgentDetailPage() {
                 {agent.service_area ?? "Service area not set"}
               </p>
             </div>
-            <button
-              onClick={approveAgent}
-              disabled={isSaving || agent.is_verified}
-              className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-            >
-              {agent.is_verified ? "Verified" : isSaving ? "Approving..." : "Approve agent"}
-            </button>
+            <AuthGuard roles={["admin"]}>
+              <button
+                onClick={approveAgent}
+                disabled={isSaving || agent.is_verified}
+                className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              >
+                {agent.is_verified ? "Verified" : isSaving ? "Approving..." : "Approve agent"}
+              </button>
+            </AuthGuard>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
             <Detail label="License" value={agent.license_number} />
@@ -102,4 +105,3 @@ function Detail({ label, value }: { label: string; value: string | null }) {
     </div>
   );
 }
-

@@ -2,6 +2,7 @@ import type {
   AISummary,
   Agent,
   AgentCreatePayload,
+  AuthToken,
   DocumentStatus,
   DocumentType,
   HealthResponse,
@@ -10,6 +11,8 @@ import type {
   PropertyDocument,
   PropertyRecord,
   VerificationStatus,
+  User,
+  UserRole,
 } from "./types";
 
 const API_BASE_URL =
@@ -44,16 +47,48 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return (await response.json()) as T;
 }
 
+function authHeaders(): HeadersInit {
+  if (typeof window === "undefined") {
+    return {};
+  }
+  const token = window.localStorage.getItem("trueplot_access_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export const api = {
   baseUrl: API_BASE_URL,
 
   health: () => request<HealthResponse>("/health"),
+
+  signup: (payload: {
+    email: string;
+    full_name: string;
+    password: string;
+    phone?: string | null;
+    role: UserRole;
+  }) =>
+    request<AuthToken>("/auth/signup", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  login: (payload: { email: string; password: string }) =>
+    request<AuthToken>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+
+  me: () =>
+    request<User>("/auth/me", {
+      headers: authHeaders(),
+    }),
 
   listProperties: () => request<PropertyRecord[]>("/properties"),
 
   createProperty: (payload: PropertyCreatePayload) =>
     request<PropertyRecord>("/properties", {
       method: "POST",
+      headers: authHeaders(),
       body: JSON.stringify(payload),
     }),
 
@@ -62,6 +97,7 @@ export const api = {
   updatePropertyStatus: (id: string, listingStatus: ListingStatus) =>
     request<PropertyRecord>(`/properties/${id}/status`, {
       method: "PATCH",
+      headers: authHeaders(),
       body: JSON.stringify({ listing_status: listingStatus }),
     }),
 
@@ -72,6 +108,7 @@ export const api = {
   ) =>
     request<PropertyRecord>(`/properties/${id}/verification`, {
       method: "PATCH",
+      headers: authHeaders(),
       body: JSON.stringify({
         is_verified: isVerified,
         verification_status: verificationStatus,
@@ -95,6 +132,7 @@ export const api = {
 
     return request<PropertyDocument>(`/properties/${propertyId}/documents`, {
       method: "POST",
+      headers: authHeaders(),
       formData,
     });
   },
@@ -112,12 +150,14 @@ export const api = {
   ) =>
     request<PropertyDocument>(`/documents/${documentId}/review`, {
       method: "PATCH",
+      headers: authHeaders(),
       body: JSON.stringify(payload),
     }),
 
   generateSummary: (documentId: string) =>
     request<AISummary>(`/documents/${documentId}/ai-summary`, {
       method: "POST",
+      headers: authHeaders(),
       body: JSON.stringify({}),
     }),
 
@@ -130,6 +170,7 @@ export const api = {
   createAgent: (payload: AgentCreatePayload) =>
     request<Agent>("/agents", {
       method: "POST",
+      headers: authHeaders(),
       body: JSON.stringify(payload),
     }),
 
@@ -138,12 +179,14 @@ export const api = {
   updateAgentVerification: (id: string, isVerified: boolean) =>
     request<Agent>(`/agents/${id}/verification`, {
       method: "PATCH",
+      headers: authHeaders(),
       body: JSON.stringify({ is_verified: isVerified }),
     }),
 
   assignAgentToProperty: (propertyId: string, agentId: string | null) =>
     request<PropertyRecord>(`/properties/${propertyId}/agent`, {
       method: "PATCH",
+      headers: authHeaders(),
       body: JSON.stringify({ agent_id: agentId }),
     }),
 };

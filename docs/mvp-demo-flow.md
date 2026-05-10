@@ -22,17 +22,25 @@ Open:
 http://localhost:3000
 ```
 
+Demo logins use password `trueplot123`:
+
+- Admin: `admin@trueplot.local`
+- Seller: `owner@example.com`
+- Verified agent: `agent@example.com`
+- Buyer: `buyer@example.com`
+
 ## 1. Create Property
 
-1. Go to `/properties/new`.
-2. Use the prefilled sample owner UUID or paste a user UUID from seeded data.
-3. Enter AP location details:
+1. Log in as `owner@example.com`.
+2. Go to `/properties/new`.
+3. Use the prefilled owner UUID.
+4. Enter AP location details:
    - District
    - Mandal
    - Village
    - Survey number
-4. Choose sale, lease, or sale-or-lease.
-5. Submit the listing.
+5. Choose sale, lease, or sale-or-lease.
+6. Submit the listing.
 
 Expected result:
 
@@ -68,7 +76,8 @@ Expected result:
 ## 4. Approve Listing
 
 1. Open `/admin` or use Admin Actions on the property workspace.
-2. Click Approve for the listing.
+2. Log in as `admin@trueplot.local` if needed.
+3. Click Approve for the listing.
 
 Expected result:
 
@@ -77,7 +86,8 @@ Expected result:
 ## 5. Verify Listing
 
 1. Open `/admin` or use Admin Actions on the property workspace.
-2. Click Verify.
+2. Log in as `admin@trueplot.local` if needed.
+3. Click Verify.
 
 Expected result:
 
@@ -89,8 +99,9 @@ Expected result:
 1. Go to `/agents`.
 2. Confirm at least one agent is verified.
 3. Open a property workspace.
-4. Use the Verified Agent panel.
-5. Select a verified agent and assign.
+4. Log in as `admin@trueplot.local`.
+5. Use the Verified Agent panel.
+6. Select a verified agent and assign.
 
 Expected result:
 
@@ -107,5 +118,4 @@ Expected result:
 Expected result:
 
 - Buyer-facing review context is visible.
-- The MVP demonstrates the verified workflow without authentication or payment complexity.
-
+- The MVP demonstrates the verified workflow with simple local role-based authentication and without payment complexity.

@@ -9,13 +9,14 @@ The project demonstrates how property listings, uploaded land documents, AI-assi
 TRUEPLOT helps model a verified property transaction workflow around:
 
 - AP land and property listings
+- Local JWT signup and login
 - EC, 1B, Adangal, sale deed, Pattadar passbook, FMB map, and other document uploads
 - AI-assisted legal summary placeholders
 - Listing approval and verification
 - Verified agent onboarding and property assignment
 - Local PostgreSQL-backed data persistence
 
-The MVP is intentionally local-first. It does not include authentication, payments, real OCR, production AI calls, KYC providers, government API integrations, or production deployment infrastructure.
+The MVP is intentionally local-first. It includes simple JWT authentication and role-aware workflows for demos, but does not include payments, real OCR, production AI calls, KYC providers, government API integrations, or production deployment infrastructure.
 
 ## Architecture Overview
 
@@ -53,7 +54,7 @@ Implemented:
 
 Not included:
 
-- Authentication or production role-based access
+- OAuth, MFA, external identity providers, or production RBAC
 - Payment flows
 - Real OCR or document parsing
 - Final legal advice
@@ -101,6 +102,8 @@ docker compose exec backend python -m scripts.seed_db
 Frontend:
 
 - Dashboard: `http://localhost:3000`
+- Login: `http://localhost:3000/login`
+- Signup: `http://localhost:3000/signup`
 - Listings: `http://localhost:3000/properties`
 - Create listing: `http://localhost:3000/properties/new`
 - Property workspace: `http://localhost:3000/properties/{property_id}`
@@ -146,21 +149,31 @@ FRONTEND_ORIGIN=http://localhost:3000
 DATABASE_URL=postgresql+psycopg://trueplot_user:trueplot_pass@localhost:5432/trueplot
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
+JWT_SECRET_KEY=change-this-local-development-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
 ```
 
 When `OPENAI_API_KEY` is empty, AI summaries run in local mock mode.
+
+Seeded demo logins use password `trueplot123`:
+
+- `admin@trueplot.local` as admin
+- `owner@example.com` as seller
+- `agent@example.com` as verified agent
+- `buyer@example.com` as buyer
 
 ## Sample Workflows
 
 Property workflow:
 
 1. Open `http://localhost:3000/properties/new`.
-2. Create a property with AP location fields.
-3. Open the property workspace.
-4. Upload an EC, 1B, Adangal, sale deed, passbook, FMB map, or other document.
-5. Generate an AI-assisted legal summary.
-6. Use admin actions to approve and verify the listing.
-7. Assign a verified agent.
+2. Log in as `owner@example.com` with password `trueplot123`.
+3. Create a property with AP location fields.
+4. Open the property workspace.
+5. Upload an EC, 1B, Adangal, sale deed, passbook, FMB map, or other document.
+6. Generate an AI-assisted legal summary.
+7. Log in as `admin@trueplot.local` to approve, verify, and assign a verified agent.
 
 Admin workflow:
 
@@ -226,8 +239,8 @@ env PYTHONPYCACHEPREFIX=/private/tmp/trueplot_pycache python3 -m compileall back
 
 ## Future Roadmap
 
-Planned future phases include OCR, stronger Telugu AI support, authentication, payments, leasing intelligence, GIS integrations, bank integrations, production Kubernetes, observability, and mobile apps. See [docs/roadmap.md](docs/roadmap.md).
+Planned future phases include OCR, stronger Telugu AI support, production identity/RBAC, payments, leasing intelligence, GIS integrations, bank integrations, production Kubernetes, observability, and mobile apps. See [docs/roadmap.md](docs/roadmap.md).
 
 ## MVP Limitations
 
-This MVP is a local prototype. AI summaries are placeholders for review, not legal advice. Uploaded files are stored locally. Admin actions do not enforce real authentication. The database setup is migration-ready but does not yet include Alembic migration files.
+This MVP is a local prototype. AI summaries are placeholders for review, not legal advice. Uploaded files are stored locally. Auth is simple local JWT-based access control, not a production identity platform. The database setup is migration-ready but does not yet include Alembic migration files.

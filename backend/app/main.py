@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import agents, ai_summaries, documents, health, properties
+from app.api.routes import agents, ai_summaries, auth, documents, health, properties
 from app.core.config import settings
 
 
@@ -21,6 +21,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router)
+    app.include_router(auth.router)
     app.include_router(agents.router)
     app.include_router(properties.router)
     app.include_router(documents.router)

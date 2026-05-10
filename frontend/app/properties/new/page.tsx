@@ -4,14 +4,17 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/AppShell";
+import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock } from "@/components/StateBlock";
 import { api } from "@/lib/api";
+import { useAuth } from "@/lib/auth";
 import type { ListingType, PropertyCreatePayload, PropertyType } from "@/lib/types";
 
 const inputClass = "w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
 
 export default function CreatePropertyPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [sampleOwnerId, setSampleOwnerId] = useState("");
@@ -19,6 +22,10 @@ export default function CreatePropertyPage() {
   useEffect(() => {
     async function loadSampleOwner() {
       try {
+        if (user) {
+          setSampleOwnerId(user.id);
+          return;
+        }
         const properties = await api.listProperties();
         setSampleOwnerId(properties[0]?.owner_id ?? "");
       } catch {
@@ -27,7 +34,7 @@ export default function CreatePropertyPage() {
     }
 
     void loadSampleOwner();
-  }, []);
+  }, [user]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,13 +78,13 @@ export default function CreatePropertyPage() {
 
   return (
     <AppShell>
-      <div className="max-w-4xl">
-        <h1 className="text-3xl font-semibold">Create property listing</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Add a local MVP listing with AP land record fields. Authentication is
-          intentionally not part of this demo.
-        </p>
-      </div>
+      <AuthGuard roles={["admin", "seller"]}>
+        <div className="max-w-4xl">
+          <h1 className="text-3xl font-semibold">Create property listing</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Add a local MVP listing with AP land record fields.
+          </p>
+        </div>
 
       <form
         onSubmit={handleSubmit}
@@ -135,7 +142,8 @@ export default function CreatePropertyPage() {
         >
           {isSaving ? "Creating..." : "Create listing"}
         </button>
-      </form>
+        </form>
+      </AuthGuard>
     </AppShell>
   );
 }

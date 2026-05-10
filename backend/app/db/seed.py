@@ -22,6 +22,7 @@ from app.models.enums import (
     ListingStatus,
     ListingType,
     PropertyType,
+    UserRole,
     VerificationStatus,
 )
 from app.models.property import Property
@@ -38,29 +39,47 @@ from app.schemas import (
 
 
 def seed_sample_data(db: Session) -> None:
+    admin = _get_or_create_user(
+        db,
+        email="admin@trueplot.local",
+        full_name="TRUEPLOT Admin",
+        phone="+919000000000",
+        role=UserRole.ADMIN,
+    )
     owner = _get_or_create_user(
         db,
         email="owner@example.com",
         full_name="Sample Land Owner",
         phone="+919000000001",
+        role=UserRole.SELLER,
     )
     lease_owner = _get_or_create_user(
         db,
         email="lease-owner@example.com",
         full_name="Sample Lease Owner",
         phone="+919000000004",
+        role=UserRole.SELLER,
     )
     review_owner = _get_or_create_user(
         db,
         email="review-owner@example.com",
         full_name="Sample Review Owner",
         phone="+919000000005",
+        role=UserRole.SELLER,
     )
     agent_user = _get_or_create_user(
         db,
         email="agent@example.com",
         full_name="Sample Verified Agent",
         phone="+919000000002",
+        role=UserRole.VERIFIED_AGENT,
+    )
+    _get_or_create_user(
+        db,
+        email="buyer@example.com",
+        full_name="Sample Buyer",
+        phone="+919000000006",
+        role=UserRole.BUYER,
     )
     agent = _get_or_create_agent(db, agent_user.id)
 
@@ -180,9 +199,20 @@ def _get_or_create_user(
     email: str,
     full_name: str,
     phone: str,
+    role: UserRole,
 ):
     user = user_crud.get_by_email(db, email)
     if user is not None:
+        user_crud.update(
+            db,
+            user,
+            {
+                "role": role,
+                "is_active": True,
+                "is_verified": True,
+                "hashed_password": _demo_password_hash(),
+            },
+        )
         return user
 
     return user_crud.create(
@@ -191,9 +221,17 @@ def _get_or_create_user(
             email=email,
             full_name=full_name,
             phone=phone,
+            role=role,
+            password="trueplot123",
             is_verified=True,
         ),
     )
+
+
+def _demo_password_hash() -> str:
+    from app.core.security import hash_password
+
+    return hash_password("trueplot123")
 
 
 def _get_or_create_agent(db: Session, user_id):

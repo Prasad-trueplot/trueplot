@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/AppShell";
+import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
 import { StatusBadge } from "@/components/StatusBadge";
 import { api } from "@/lib/api";
@@ -93,13 +94,14 @@ export default function AdminPage() {
 
   return (
     <AppShell>
-      <div>
-        <h1 className="text-3xl font-semibold">Admin moderation</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Local MVP moderation controls for approving listings and marking AP
-          property records as verified.
-        </p>
-      </div>
+      <AuthGuard roles={["admin"]}>
+        <div>
+          <h1 className="text-3xl font-semibold">Admin moderation</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Local MVP moderation controls for approving listings and marking AP
+            property records as verified.
+          </p>
+        </div>
 
       <section className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 p-4">
@@ -176,9 +178,9 @@ export default function AdminPage() {
             ))}
           </div>
         )}
-      </section>
+        </section>
 
-      <section className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <section className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm">
         <div className="border-b border-slate-200 p-4">
           <h2 className="font-semibold">Agent approval queue</h2>
           <p className="mt-1 text-sm text-slate-600">
@@ -227,7 +229,8 @@ export default function AdminPage() {
             ))}
           </div>
         )}
-      </section>
+        </section>
+      </AuthGuard>
     </AppShell>
   );
 }

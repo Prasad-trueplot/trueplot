@@ -3,9 +3,11 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_current_user, get_db
 from app.crud import ai_summary_crud, property_crud, property_document_crud
 from app.models.enums import AISummaryType
+from app.models.enums import UserRole
+from app.models.user import User
 from app.schemas.ai_summary import (
     AISummaryCreate,
     AISummaryGenerateRequest,
@@ -26,6 +28,7 @@ def generate_document_ai_summary(
     document_id: UUID,
     payload: AISummaryGenerateRequest | None = None,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     document = property_document_crud.get(db, document_id)
     if document is None:
@@ -41,11 +44,26 @@ def generate_document_ai_summary(
             detail="Linked property not found",
         )
 
+    allowed_agent = (
+        property_record.assigned_agent_id is not None
+        and getattr(current_user, "agent_profile", None) is not None
+        and current_user.agent_profile.id == property_record.assigned_agent_id
+    )
+    if (
+        current_user.role != UserRole.ADMIN
+        and property_record.owner_id != current_user.id
+        and not allowed_agent
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the owner, assigned agent, or admin can generate summaries",
+        )
+
     result = generate_legal_summary(document=document, property_record=property_record)
     summary_in = AISummaryCreate(
         property_id=document.property_id,
         document_id=document.id,
-        created_by_user_id=payload.created_by_user_id if payload else None,
+        created_by_user_id=payload.created_by_user_id if payload else current_user.id,
         summary_type=AISummaryType.DOCUMENT,
         content=result.content,
         english_summary=result.english_summary,
@@ -103,4 +121,3 @@ def get_ai_summary(summary_id: UUID, db: Session = Depends(get_db)):
         )
 
     return summary
-

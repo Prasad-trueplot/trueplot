@@ -61,3 +61,10 @@ class AISummaryType(StrEnum):
     PROPERTY = "property"
     DOCUMENT = "document"
     LEAD = "lead"
+
+
+class UserRole(StrEnum):
+    ADMIN = "admin"
+    SELLER = "seller"
+    BUYER = "buyer"
+    VERIFIED_AGENT = "verified_agent"

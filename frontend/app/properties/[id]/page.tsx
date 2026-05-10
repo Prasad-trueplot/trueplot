@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { AISummaryPanel } from "@/components/AISummaryPanel";
 import { AgentAssignmentPanel } from "@/components/AgentAssignmentPanel";
 import { AppShell } from "@/components/AppShell";
+import { AuthGuard } from "@/components/AuthGuard";
 import { DocumentPanel } from "@/components/DocumentPanel";
 import { PropertyActions } from "@/components/PropertyActions";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
@@ -128,8 +129,10 @@ export default function PropertyDetailPage() {
           <AISummaryPanel summaries={summaries} />
         </div>
         <div className="space-y-6">
-          <AgentAssignmentPanel property={property} onChange={setProperty} />
-          <PropertyActions property={property} onChange={setProperty} />
+          <AuthGuard roles={["admin"]}>
+            <AgentAssignmentPanel property={property} onChange={setProperty} />
+            <PropertyActions property={property} onChange={setProperty} />
+          </AuthGuard>
         </div>
       </div>
     </AppShell>

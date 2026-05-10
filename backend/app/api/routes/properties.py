@@ -3,9 +3,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_current_user, get_db, require_admin
 from app.crud import agent_crud, property_crud
-from app.models.enums import ListingStatus, ListingType, VerificationStatus
+from app.models.enums import ListingStatus, ListingType, UserRole, VerificationStatus
+from app.models.user import User
 from app.schemas.property import (
     PropertyCreate,
     PropertyRead,
@@ -24,7 +25,16 @@ router = APIRouter(prefix="/properties", tags=["properties"])
     status_code=status.HTTP_201_CREATED,
     summary="Create property listing",
 )
-def create_property(payload: PropertyCreate, db: Session = Depends(get_db)):
+def create_property(
+    payload: PropertyCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != UserRole.ADMIN and payload.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Sellers can only create properties for their own user account",
+        )
     return property_crud.create(db, payload)
 
 
@@ -84,12 +94,19 @@ def update_property(
     property_id: UUID,
     payload: PropertyUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     property_record = property_crud.get(db, property_id)
     if property_record is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Property not found",
+        )
+
+    if current_user.role != UserRole.ADMIN and property_record.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the owner or admin can update this property",
         )
 
     return property_crud.update(db, property_record, payload)
@@ -104,6 +121,7 @@ def update_property_status(
     property_id: UUID,
     payload: PropertyStatusUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     property_record = property_crud.get(db, property_id)
     if property_record is None:
@@ -128,6 +146,7 @@ def update_property_verification(
     property_id: UUID,
     payload: PropertyVerificationUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     property_record = property_crud.get(db, property_id)
     if property_record is None:
@@ -155,6 +174,7 @@ def update_property_agent(
     property_id: UUID,
     payload: PropertyAgentAssignment,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
 ):
     property_record = property_crud.get(db, property_id)
     if property_record is None:

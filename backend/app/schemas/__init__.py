@@ -25,7 +25,7 @@ from app.schemas.property_document import (
     PropertyDocumentReviewUpdate,
     PropertyDocumentUpdate,
 )
-from app.schemas.user import UserCreate, UserRead, UserUpdate
+from app.schemas.user import Token, UserCreate, UserLogin, UserRead, UserSignup, UserUpdate
 
 __all__ = [
     "AISummaryCreate",
@@ -53,6 +53,9 @@ __all__ = [
     "PropertyUpdate",
     "PropertyVerificationUpdate",
     "UserCreate",
+    "UserLogin",
     "UserRead",
+    "UserSignup",
+    "Token",
     "UserUpdate",
 ]

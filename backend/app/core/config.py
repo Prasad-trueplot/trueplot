@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     )
     openai_api_key: str | None = None
     openai_model: str = "gpt-4.1-mini"
+    jwt_secret_key: str = "change-me-local-dev-secret"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 1440
 
     model_config = SettingsConfigDict(
         env_file=".env",

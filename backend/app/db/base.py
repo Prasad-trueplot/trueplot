@@ -17,13 +17,3 @@ class Base(DeclarativeBase):
     """
 
     metadata = MetaData(naming_convention=convention)
-
-
-# Import models so Base.metadata contains every table for migrations.
-from app.models.agent import Agent  # noqa: E402,F401
-from app.models.ai_summary import AISummary  # noqa: E402,F401
-from app.models.lead import Lead  # noqa: E402,F401
-from app.models.lease_listing import LeaseListing  # noqa: E402,F401
-from app.models.property import Property  # noqa: E402,F401
-from app.models.property_document import PropertyDocument  # noqa: E402,F401
-from app.models.user import User  # noqa: E402,F401
