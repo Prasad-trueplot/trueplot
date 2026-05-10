@@ -29,14 +29,20 @@ def build_legal_summary_prompt(
     document: PropertyDocument,
     property_record: Property,
 ) -> str:
+    extracted_text = (
+        document.extracted_text or "No OCR text available; use uploaded metadata only."
+    )
     return AI_LEGAL_SUMMARY_PROMPT_TEMPLATE.format(
         document_type=document.document_type.value,
         filename=document.original_filename or document.file_name,
+        ocr_extraction_status=document.ocr_extraction_status,
+        ocr_extraction_method=document.ocr_extraction_method or "unknown",
         property_title=property_record.title,
         district=property_record.district or "Not provided",
         mandal=property_record.mandal or "Not provided",
         village=property_record.village or "Not provided",
         survey_number=property_record.survey_number or "Not provided",
+        extracted_text=extracted_text[:4000],
     )
 
 
@@ -67,9 +73,10 @@ def _generate_mock_summary(
     survey_number = property_record.survey_number or "not provided"
 
     english_summary = (
-        f"AI-assisted mock summary for {doc_type}. The document is linked to "
-        f"{property_record.title} at {location or 'location not provided'}, "
-        f"survey number {survey_number}."
+        f"AI-assisted mock summary for {doc_type}. OCR text was "
+        f"{'extracted and used' if document.extracted_text else 'not available; fallback metadata was used'}. "
+        f"The document is linked to {property_record.title} at "
+        f"{location or 'location not provided'}, survey number {survey_number}."
     )
     telugu_summary = (
         "AI సహాయంతో రూపొందించిన స్థానిక MVP సారాంశం. ఈ పత్రం భూమి వివరాలు, "
@@ -81,12 +88,14 @@ def _generate_mock_summary(
     )
     document_insights = (
         f"Uploaded file '{document.original_filename or document.file_name}' is stored "
-        f"locally as '{document.stored_filename or 'not available'}'. No OCR or document "
-        "content extraction has been performed in this MVP placeholder."
+        f"locally as '{document.stored_filename or 'not available'}'. "
+        f"OCR status: {document.ocr_extraction_status}. "
+        f"OCR method: {document.ocr_extraction_method or 'not available'}. "
+        f"{'Extracted OCR text is available for downstream review.' if document.extracted_text else 'No OCR text available; metadata-only fallback was used.'}"
     )
     risk_flags = (
-        "OCR not enabled; source document text was not extracted. Verify EC chain, "
-        "1B/Adangal consistency, survey boundaries, encumbrances, and seller authority manually."
+        f"{'OCR extracted text should still be manually reviewed against the original file.' if document.extracted_text else 'OCR text was not extracted; verify the uploaded file manually.'} "
+        "Verify EC chain, 1B/Adangal consistency, survey boundaries, encumbrances, and seller authority manually."
     )
     recommended_next_steps = (
         "Review original document, compare with EC/1B/Adangal/FMB records, validate survey "
@@ -125,7 +134,7 @@ def _generate_openai_placeholder_summary(
     prompt = build_legal_summary_prompt(document, property_record)
     english_summary = (
         "OpenAI API key is configured, but live OpenAI execution is intentionally "
-        "left as a placeholder for the local MVP. Prompt is ready for integration."
+        "left as a placeholder for the local MVP. OCR text is included in the prompt."
     )
     document_insights = f"Prompt prepared for model {settings.openai_model}: {prompt}"
 
@@ -151,4 +160,3 @@ def _generate_openai_placeholder_summary(
         model_name=settings.openai_model,
         is_mock=False,
     )
-

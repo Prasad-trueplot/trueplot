@@ -9,6 +9,7 @@ import type {
   ListingStatus,
   PropertyCreatePayload,
   PropertyDocument,
+  PropertyPricingEstimate,
   PropertyRecord,
   VerificationStatus,
   User,
@@ -163,6 +164,16 @@ export const api = {
 
   listSummaries: (propertyId: string) =>
     request<AISummary[]>(`/properties/${propertyId}/ai-summaries`),
+
+  generatePricingEstimate: (propertyId: string) =>
+    request<PropertyPricingEstimate>(`/properties/${propertyId}/pricing-estimate`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({}),
+    }),
+
+  listPricingEstimates: (propertyId: string) =>
+    request<PropertyPricingEstimate[]>(`/properties/${propertyId}/pricing-estimates`),
 
   listAgents: (verifiedOnly = false) =>
     request<Agent[]>(`/agents${verifiedOnly ? "?verified_only=true" : ""}`),

@@ -32,6 +32,13 @@ The frontend uses `NEXT_PUBLIC_API_BASE_URL` to call the backend.
 
 Role-aware navigation and route guards are implemented in the frontend for local MVP flows. Backend authorization remains the source of truth for protected actions.
 
+Frontend pricing intelligence:
+
+- Property detail pages include an AI pricing panel.
+- The panel renders sale or lease estimates based on the property listing type.
+- It shows the estimate range, confidence score, pricing factors, market notes, and disclaimer.
+- The generate CTA calls the backend pricing endpoint and saves the result to the property workspace state.
+
 ## Backend Architecture
 
 The backend lives in `backend/`.
@@ -45,6 +52,7 @@ Key parts:
 - `app/crud/`: CRUD utilities
 - `app/db/`: database session, metadata, local schema setup, seed data
 - `app/services/`: upload storage and AI summary placeholder services
+- `app/services/pricing_service.py`: AI-assisted fair market value placeholder logic
 - `scripts/seed_db.py`: local sample data entrypoint
 
 Auth modules:
@@ -72,12 +80,14 @@ Core tables:
 - `leads`: sample buyer/lessee interest records
 - `lease_listings`: lease-specific listing data
 - `ai_summaries`: AI-assisted document/property summary records
+- `property_pricing_estimates`: AI-assisted sale and lease pricing placeholder records
 
 Important relationships:
 
 - A user owns many properties.
 - A property can have many documents.
 - A property can have many AI summaries.
+- A property can have many pricing estimates.
 - A document-generated AI summary links to both property and document.
 - A verified agent can be assigned to many properties.
 
@@ -101,8 +111,10 @@ Protected actions include:
 2. User uploads a document with a validated document type.
 3. Backend validates that the property exists.
 4. File is stored under `backend/uploads/`.
-5. Metadata is saved in `property_documents`.
-6. Admin can update review status, verification status, and review notes.
+5. OCR extraction runs synchronously for PDF, JPG, and PNG uploads.
+6. Extracted text, status, method, and errors are saved in `property_documents`.
+7. Metadata is saved in `property_documents`.
+8. Admin can update review status, verification status, and review notes.
 
 Supported document types:
 
@@ -114,17 +126,44 @@ Supported document types:
 - FMB map
 - Other
 
+OCR notes:
+
+- Tesseract is the primary local OCR engine.
+- The pipeline falls back to mock extraction mode when the OCR toolchain is unavailable.
+- The extracted text is stored on the document record and reused by AI summary generation.
+
 ## AI Summary Workflow
 
 1. User selects an uploaded document.
 2. Frontend calls `POST /documents/{document_id}/ai-summary`.
 3. Backend validates the document and linked property.
-4. `ai_service.py` builds a local legal-summary placeholder.
-5. If `OPENAI_API_KEY` is empty, the service runs in mock mode.
-6. Summary is stored in `ai_summaries`.
-7. Frontend displays English summary, Telugu summary, ownership summary, document insights, risk flags, next steps, and disclaimer.
+4. OCR text from the uploaded document is passed into the summary prompt when available.
+5. `ai_service.py` builds a local legal-summary placeholder.
+6. If `OPENAI_API_KEY` is empty, the service runs in mock mode.
+7. Summary is stored in `ai_summaries`.
+8. Frontend displays English summary, Telugu summary, ownership summary, document insights, risk flags, next steps, and disclaimer.
 
 All AI summary output is explicitly marked as preliminary and not final legal advice.
+
+## AI Pricing Intelligence Workflow
+
+1. User opens a property workspace.
+2. User clicks Generate price estimate in the pricing panel.
+3. Backend validates the property and authorizes the user.
+4. `pricing_service.py` generates a deterministic local placeholder estimate.
+5. The estimate supports both sale and lease listings.
+6. The result is stored in `property_pricing_estimates`.
+7. Frontend displays price range, confidence score, pricing factors, market notes, and disclaimer.
+
+Pricing output fields:
+
+- Estimated low and high amounts
+- Confidence score
+- Pricing factors
+- District, mandal, and village influence
+- Road/highway proximity placeholder
+- Market notes
+- AI-assisted valuation disclaimer
 
 ## Verified Agent Workflow
 

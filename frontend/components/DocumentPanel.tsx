@@ -93,12 +93,13 @@ export function DocumentPanel({
             Document upload
           </h2>
           <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
-          Store local MVP documents for EC, 1B, Adangal, sale deed, passbook,
-          FMB map, or other AP land records.
+            Store local MVP documents for EC, 1B, Adangal, sale deed, passbook,
+            FMB map, or other AP land records. PDF and image uploads are OCR-processed
+            before AI summary generation.
           </p>
         </div>
         <span className="w-fit rounded-full border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-xs font-semibold text-cyan-700">
-          AI-ready
+          OCR-ready
         </span>
       </div>
 
@@ -122,6 +123,7 @@ export function DocumentPanel({
           <FieldShell label="File">
           <input
             type="file"
+            accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*"
             onChange={(event) => setFile(event.target.files?.[0] ?? null)}
             className={inputStyles}
           />
@@ -178,8 +180,38 @@ export function DocumentPanel({
                   disabled={generatingId === document.id}
                   variant="secondary"
                 >
-                  {generatingId === document.id ? "Generating..." : "Generate AI summary"}
+                  {generatingId === document.id ? "Generating..." : "Generate OCR-backed AI summary"}
                 </Button>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-[220px_1fr]">
+                <div className="rounded-lg border border-slate-200 bg-white p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    OCR status
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <StatusBadge value={document.ocr_extraction_status} />
+                    {document.ocr_extraction_method ? (
+                      <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                        {document.ocr_extraction_method}
+                      </span>
+                    ) : null}
+                  </div>
+                  {document.ocr_extraction_error ? (
+                    <p className="mt-3 text-sm leading-6 text-red-700">
+                      {document.ocr_extraction_error}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="rounded-lg border border-slate-200 bg-white p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    Extracted text preview
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">
+                    {document.extracted_text
+                      ? `${document.extracted_text.slice(0, 360)}${document.extracted_text.length > 360 ? "..." : ""}`
+                      : "No OCR text captured yet."}
+                  </p>
+                </div>
               </div>
             </div>
           ))

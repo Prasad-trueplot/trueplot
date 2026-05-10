@@ -2,7 +2,7 @@
 
 TRUEPLOT is a local MVP for an AI-assisted, verified real estate transaction workflow focused on Andhra Pradesh land and property records.
 
-The project demonstrates how property listings, uploaded land documents, AI-assisted legal summaries, verified agents, and admin moderation can work together in a simple local environment. It is built for founder demos, co-founder review, investor walkthroughs, and future developer onboarding.
+The project demonstrates how property listings, uploaded land documents, AI-assisted legal summaries, AI-assisted fair market value estimates, verified agents, and admin moderation can work together in a simple local environment. It is built for founder demos, co-founder review, investor walkthroughs, and future developer onboarding.
 
 ## Project Overview
 
@@ -11,7 +11,9 @@ TRUEPLOT helps model a verified property transaction workflow around:
 - AP land and property listings
 - Local JWT signup and login
 - EC, 1B, Adangal, sale deed, Pattadar passbook, FMB map, and other document uploads
+- OCR extraction for PDF and image uploads before AI summarization
 - AI-assisted legal summary placeholders
+- AI-assisted fair market value placeholders
 - Listing approval and verification
 - Verified agent onboarding and property assignment
 - Local PostgreSQL-backed data persistence
@@ -44,9 +46,11 @@ Implemented:
 - Sale, lease, and sale-or-lease listing types
 - AP location fields: district, mandal, village, survey number
 - Local document upload and metadata storage
+- OCR extraction status and extracted text preview
 - AI legal summary placeholder with mock mode
 - English and Telugu summary fields
 - Risk flags, ownership summary, document insights, next steps, and disclaimer
+- AI pricing intelligence panel with estimate range, confidence score, pricing factors, and disclaimer
 - Verified agent onboarding
 - Agent approval and property assignment
 - Admin moderation screens
@@ -172,8 +176,10 @@ Property workflow:
 3. Create a property with AP location fields.
 4. Open the property workspace.
 5. Upload an EC, 1B, Adangal, sale deed, passbook, FMB map, or other document.
-6. Generate an AI-assisted legal summary.
-7. Log in as `admin@trueplot.local` to approve, verify, and assign a verified agent.
+6. Review the OCR extraction status and extracted text preview.
+7. Generate an AI-assisted legal summary.
+8. Generate an AI-assisted fair market value estimate.
+9. Log in as `admin@trueplot.local` to approve, verify, and assign a verified agent.
 
 Admin workflow:
 
@@ -227,6 +233,7 @@ env PYTHONPYCACHEPREFIX=/private/tmp/trueplot_pycache python3 -m compileall back
 - [MVP Demo Flow](docs/mvp-demo-flow.md)
 - [Developer Setup](docs/developer-setup.md)
 - [Roadmap](docs/roadmap.md)
+- [Founder Demo Script](docs/founder-demo-script.md)
 
 ## Troubleshooting
 

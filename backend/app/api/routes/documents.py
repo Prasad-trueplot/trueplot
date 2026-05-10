@@ -1,5 +1,7 @@
 from uuid import UUID
 
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 
@@ -13,6 +15,7 @@ from app.schemas.property_document import (
     PropertyDocumentRead,
     PropertyDocumentReviewUpdate,
 )
+from app.services.ocr_service import extract_document_text
 from app.services.storage import save_upload_file
 
 router = APIRouter(tags=["documents"])
@@ -47,6 +50,12 @@ async def upload_property_document(
         )
 
     stored_file = await save_upload_file(file)
+    extraction = extract_document_text(
+        file_path=stored_file.file_path,
+        original_filename=stored_file.original_filename,
+        document_type=document_type,
+        content_type=stored_file.content_type,
+    )
     document = PropertyDocumentCreate(
         property_id=property_id,
         uploaded_by_user_id=uploaded_by_user_id or current_user.id,
@@ -58,6 +67,11 @@ async def upload_property_document(
         file_size_bytes=stored_file.file_size_bytes,
         file_url=stored_file.relative_path,
         status=DocumentStatus.PENDING,
+        ocr_extraction_status=extraction.ocr_extraction_status,
+        ocr_extraction_method=extraction.ocr_extraction_method,
+        extracted_text=extraction.extracted_text,
+        ocr_extraction_error=extraction.ocr_extraction_error,
+        ocr_extracted_at=datetime.now(timezone.utc),
         is_verified=False,
         notes=notes,
     )

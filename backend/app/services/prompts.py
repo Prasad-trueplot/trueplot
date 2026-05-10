@@ -4,11 +4,15 @@ You are assisting TRUEPLOT with a local MVP land-document review workflow.
 Document context:
 - Document type: {document_type}
 - Original filename: {filename}
+- OCR status: {ocr_extraction_status}
+- OCR method: {ocr_extraction_method}
 - Property title: {property_title}
 - District: {district}
 - Mandal: {mandal}
 - Village: {village}
 - Survey number: {survey_number}
+- Extracted text:
+{extracted_text}
 
 Create an AI-assisted summary for human legal review only.
 Do not present the output as final legal advice.
@@ -22,4 +26,3 @@ Return these sections:
 6. Recommended next steps
 7. Disclaimer
 """
-

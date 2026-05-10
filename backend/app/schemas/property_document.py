@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from app.models.enums import DocumentStatus, DocumentType
@@ -15,6 +16,11 @@ class PropertyDocumentBase(ORMBaseModel):
     file_size_bytes: int | None = None
     file_url: str | None = None
     status: DocumentStatus = DocumentStatus.PENDING
+    ocr_extraction_status: str = "pending"
+    ocr_extraction_method: str | None = None
+    extracted_text: str | None = None
+    ocr_extraction_error: str | None = None
+    ocr_extracted_at: datetime | None = None
     is_verified: bool = False
     notes: str | None = None
     admin_review_notes: str | None = None
@@ -33,6 +39,11 @@ class PropertyDocumentUpdate(ORMBaseModel):
     file_size_bytes: int | None = None
     file_url: str | None = None
     status: DocumentStatus | None = None
+    ocr_extraction_status: str | None = None
+    ocr_extraction_method: str | None = None
+    extracted_text: str | None = None
+    ocr_extraction_error: str | None = None
+    ocr_extracted_at: datetime | None = None
     is_verified: bool | None = None
     notes: str | None = None
     admin_review_notes: str | None = None

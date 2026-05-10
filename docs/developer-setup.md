@@ -6,6 +6,7 @@
 - Docker Compose
 - Node.js 22+ and npm for non-Docker frontend development
 - Python 3.12+ for non-Docker backend development
+- Tesseract OCR and Poppler are installed automatically in the backend Docker image
 
 Check Docker:
 
@@ -108,6 +109,9 @@ JWT_SECRET_KEY=change-this-local-development-secret
 JWT_ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=1440
 ```
+
+The AI pricing intelligence panel uses the same backend API and stores records in `property_pricing_estimates`. It is local-placeholder logic and does not call any paid valuation service.
+The OCR pipeline stores extracted text, status, method, and error details on `property_documents`.
 
 Seeded demo accounts use password `trueplot123`:
 
@@ -215,6 +219,14 @@ Fix:
 docker compose build backend
 docker compose up -d backend
 ```
+
+Pricing endpoint returns 401:
+
+Fix:
+
+- Log in with a seeded demo user or approved role.
+- Include the bearer token in the request.
+- Use the property owner or `admin@trueplot.local` for demo generation.
 
 Database schema stale:
 

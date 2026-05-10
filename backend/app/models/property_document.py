@@ -1,6 +1,8 @@
 from uuid import UUID
 
-from sqlalchemy import BigInteger, Boolean, Enum, ForeignKey, String, Text
+from datetime import datetime
+
+from sqlalchemy import BigInteger, Boolean, DateTime, Enum, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PostgresUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -40,6 +42,22 @@ class PropertyDocument(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         default=DocumentStatus.PENDING,
         nullable=False,
         index=True,
+    )
+    ocr_extraction_status: Mapped[str] = mapped_column(
+        String(24),
+        default="pending",
+        nullable=False,
+        index=True,
+    )
+    ocr_extraction_method: Mapped[str | None] = mapped_column(
+        String(40),
+        nullable=True,
+    )
+    extracted_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ocr_extraction_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    ocr_extracted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)

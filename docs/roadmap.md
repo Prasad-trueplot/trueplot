@@ -37,6 +37,14 @@ The current repository is a local MVP. The following roadmap outlines likely fut
 - Deposit and escalation tracking
 - Commercial lease workflow support
 
+## Phase 5b: Fair Market Value Intelligence
+
+- Better pricing signals for sale and lease listings
+- District, mandal, and village market context
+- Road and highway proximity enrichment
+- Confidence scoring refinement
+- Human review feedback for pricing signals
+
 ## Phase 6: GIS Integrations
 
 - Map-based property search
@@ -80,4 +88,3 @@ The current repository is a local MVP. The following roadmap outlines likely fut
 - Seller app
 - Agent field workflow app
 - Document capture and upload from mobile
-

@@ -19,6 +19,12 @@ from app.schemas.property import (
     PropertyUpdate,
     PropertyVerificationUpdate,
 )
+from app.schemas.property_pricing_estimate import (
+    PropertyPricingEstimateCreate,
+    PropertyPricingEstimateGenerateRequest,
+    PropertyPricingEstimateRead,
+    PropertyPricingEstimateUpdate,
+)
 from app.schemas.property_document import (
     PropertyDocumentCreate,
     PropertyDocumentRead,
@@ -49,6 +55,10 @@ __all__ = [
     "PropertyDocumentReviewUpdate",
     "PropertyDocumentUpdate",
     "PropertyRead",
+    "PropertyPricingEstimateCreate",
+    "PropertyPricingEstimateGenerateRequest",
+    "PropertyPricingEstimateRead",
+    "PropertyPricingEstimateUpdate",
     "PropertyStatusUpdate",
     "PropertyUpdate",
     "PropertyVerificationUpdate",

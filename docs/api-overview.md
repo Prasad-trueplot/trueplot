@@ -179,6 +179,20 @@ curl -X PATCH http://localhost:8000/documents/REPLACE_WITH_DOCUMENT_UUID/review 
   }'
 ```
 
+Document responses also include OCR fields:
+
+- `ocr_extraction_status`
+- `ocr_extraction_method`
+- `extracted_text`
+- `ocr_extraction_error`
+- `ocr_extracted_at`
+
+OCR notes:
+
+- PDF and image uploads are processed locally with Tesseract-based OCR when available.
+- Unsupported or unreadable files return a failed extraction status.
+- Fallback mock extraction is used when the OCR toolchain is unavailable.
+
 ## AI Summary APIs
 
 Endpoints:
@@ -208,6 +222,45 @@ Response includes:
 - `is_mock`
 
 The output is for preliminary review only and is not final legal advice.
+
+## Pricing Intelligence APIs
+
+Endpoints:
+
+- `POST /properties/{property_id}/pricing-estimate`
+- `GET /properties/{property_id}/pricing-estimates`
+
+Generate AI-assisted fair market value estimate:
+
+```bash
+curl -X POST http://localhost:8000/properties/REPLACE_WITH_PROPERTY_UUID/pricing-estimate \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer REPLACE_WITH_ACCESS_TOKEN" \
+  -d '{}'
+```
+
+The response includes:
+
+- `estimated_low_amount`
+- `estimated_high_amount`
+- `confidence_score`
+- `pricing_factors`
+- `district_influence`
+- `mandal_influence`
+- `village_influence`
+- `road_highway_proximity`
+- `market_notes`
+- `disclaimer`
+- `pricing_basis`
+- `is_mock`
+
+Pricing notes:
+
+- Sale listings return a sale price range.
+- Lease listings return a monthly lease range.
+- Confidence score is a planning signal, not a valuation guarantee.
+- Pricing factors explain the metadata used by the placeholder model.
+- Disclaimer text must be shown as AI-assisted estimate only.
 
 ## Agent APIs
 

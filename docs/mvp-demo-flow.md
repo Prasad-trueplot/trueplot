@@ -59,6 +59,8 @@ Expected result:
 Expected result:
 
 - File is stored under `backend/uploads/`.
+- OCR extraction status appears on the document card.
+- Extracted text preview appears in the document panel.
 - Metadata appears in the property document list.
 
 ## 3. Generate AI Summary
@@ -69,11 +71,25 @@ Expected result:
 Expected result:
 
 - Summary appears in the AI legal summary section.
+- Summary uses OCR text when available.
 - English and Telugu fields are shown.
 - Risk flags and next steps are shown.
 - Disclaimer says the output is not final legal advice.
 
-## 4. Approve Listing
+## 4. Generate AI Pricing Estimate
+
+1. In the same property workspace, open the pricing intelligence panel.
+2. Click Generate price estimate.
+
+Expected result:
+
+- AI-assisted fair market value range is displayed.
+- Confidence score is shown as a planning signal.
+- Pricing factors explain the placeholder logic.
+- District, mandal, village, and road access signals are visible.
+- Disclaimer clearly states this is not an official valuation.
+
+## 5. Approve Listing
 
 1. Open `/admin` or use Admin Actions on the property workspace.
 2. Log in as `admin@trueplot.local` if needed.
@@ -83,7 +99,7 @@ Expected result:
 
 - Listing status changes to `active`.
 
-## 5. Verify Listing
+## 6. Verify Listing
 
 1. Open `/admin` or use Admin Actions on the property workspace.
 2. Log in as `admin@trueplot.local` if needed.
@@ -94,7 +110,7 @@ Expected result:
 - `is_verified` becomes true.
 - Verification status changes to `verified`.
 
-## 6. Assign Verified Agent
+## 7. Assign Verified Agent
 
 1. Go to `/agents`.
 2. Confirm at least one agent is verified.
@@ -108,12 +124,12 @@ Expected result:
 - Property displays assigned agent details.
 - Backend rejects unverified agents.
 
-## 7. Buyer Viewing Flow
+## 8. Buyer Viewing Flow
 
 1. Go to `/properties`.
 2. Search by district, mandal, village, or survey number.
 3. Open a listing.
-4. Review verification status, listing status, documents, AI summary, risk flags, and assigned agent.
+4. Review verification status, listing status, documents, AI summary, pricing intelligence, risk flags, and assigned agent.
 
 Expected result:
 

@@ -9,13 +9,19 @@ import { AgentAssignmentPanel } from "@/components/AgentAssignmentPanel";
 import { AppShell } from "@/components/AppShell";
 import { AuthGuard } from "@/components/AuthGuard";
 import { DocumentPanel } from "@/components/DocumentPanel";
+import { PricingIntelligencePanel } from "@/components/PricingIntelligencePanel";
 import { PropertyActions } from "@/components/PropertyActions";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ButtonLink, Card, DetailTile, MapPreview } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDate, formatExtent, titleCase } from "@/lib/format";
-import type { AISummary, PropertyDocument, PropertyRecord } from "@/lib/types";
+import type {
+  AISummary,
+  PropertyDocument,
+  PropertyPricingEstimate,
+  PropertyRecord,
+} from "@/lib/types";
 
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
@@ -23,6 +29,9 @@ export default function PropertyDetailPage() {
   const [property, setProperty] = useState<PropertyRecord | null>(null);
   const [documents, setDocuments] = useState<PropertyDocument[]>([]);
   const [summaries, setSummaries] = useState<AISummary[]>([]);
+  const [pricingEstimates, setPricingEstimates] = useState<
+    PropertyPricingEstimate[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,15 +40,21 @@ export default function PropertyDetailPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const [propertyResponse, documentResponse, summaryResponse] =
-          await Promise.all([
-            api.getProperty(propertyId),
-            api.listDocuments(propertyId),
-            api.listSummaries(propertyId),
-          ]);
+        const [
+          propertyResponse,
+          documentResponse,
+          summaryResponse,
+          pricingResponse,
+        ] = await Promise.all([
+          api.getProperty(propertyId),
+          api.listDocuments(propertyId),
+          api.listSummaries(propertyId),
+          api.listPricingEstimates(propertyId),
+        ]);
         setProperty(propertyResponse);
         setDocuments(documentResponse);
         setSummaries(summaryResponse);
+        setPricingEstimates(pricingResponse);
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : "Load failed");
       } finally {
@@ -150,7 +165,19 @@ export default function PropertyDetailPage() {
             onDocumentsChange={setDocuments}
             onGenerateSummary={generateSummary}
           />
-          <AISummaryPanel summaries={summaries} />
+          <PricingIntelligencePanel
+            propertyId={property.id}
+            listingType={property.listing_type}
+            estimates={pricingEstimates}
+          />
+          <AISummaryPanel
+            summaries={summaries}
+            hasOcrText={documents.some(
+              (document) =>
+                document.ocr_extraction_status === "completed" &&
+                Boolean(document.extracted_text),
+            )}
+          />
         </div>
         <div className="space-y-6">
           <AuthGuard roles={["admin"]}>

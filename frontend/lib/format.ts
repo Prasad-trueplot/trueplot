@@ -19,3 +19,10 @@ export function formatExtent(value: string | null): string {
   return value ? `${Number(value).toLocaleString("en-IN")} sq yd` : "Not set";
 }
 
+export function formatCurrency(value: number, currency = "INR"): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
+}

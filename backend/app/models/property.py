@@ -79,3 +79,8 @@ class Property(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         back_populates="property",
         cascade="all, delete-orphan",
     )
+    pricing_estimates = relationship(
+        "PropertyPricingEstimate",
+        back_populates="property",
+        cascade="all, delete-orphan",
+    )

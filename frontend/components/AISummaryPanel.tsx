@@ -4,7 +4,13 @@ import type { AISummary } from "@/lib/types";
 import { StatusBadge } from "./StatusBadge";
 import { Card } from "./ui";
 
-export function AISummaryPanel({ summaries }: { summaries: AISummary[] }) {
+export function AISummaryPanel({
+  summaries,
+  hasOcrText = false,
+}: {
+  summaries: AISummary[];
+  hasOcrText?: boolean;
+}) {
   return (
     <Card className="p-5">
       <div className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between">
@@ -17,6 +23,7 @@ export function AISummaryPanel({ summaries }: { summaries: AISummary[] }) {
           </h2>
           <p className="mt-1 text-sm leading-6 text-slate-600">
             AI-assisted document summary for review. Not final legal advice.
+            {hasOcrText ? " Generated from OCR-extracted text when available." : ""}
           </p>
         </div>
         <span className="w-fit rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
@@ -44,7 +51,7 @@ export function AISummaryPanel({ summaries }: { summaries: AISummary[] }) {
                 <div className="flex flex-wrap gap-2">
                   <StatusBadge value={summary.is_mock ? "pending" : "active"} />
                   <span className="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                    {summary.is_mock ? "Mock mode" : "OpenAI mode"}
+                    {summary.is_mock ? "OCR-aware mock mode" : "OpenAI mode"}
                   </span>
                 </div>
               </div>

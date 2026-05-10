@@ -11,6 +11,7 @@ export type DocumentType =
   | "fmb_map"
   | "other";
 export type DocumentStatus = "pending" | "under_review" | "approved" | "rejected";
+export type DocumentOcrStatus = "pending" | "completed" | "failed";
 
 export type PropertyRecord = {
   id: string;
@@ -68,6 +69,11 @@ export type PropertyDocument = {
   file_size_bytes: number | null;
   file_url: string | null;
   status: DocumentStatus;
+  ocr_extraction_status: DocumentOcrStatus;
+  ocr_extraction_method: string | null;
+  extracted_text: string | null;
+  ocr_extraction_error: string | null;
+  ocr_extracted_at: string | null;
   is_verified: boolean;
   notes: string | null;
   admin_review_notes: string | null;
@@ -92,6 +98,30 @@ export type AISummary = {
   model_name: string | null;
   is_mock: boolean;
   is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PropertyPricingEstimate = {
+  id: string;
+  property_id: string;
+  created_by_user_id: string | null;
+  listing_type: ListingType;
+  pricing_basis: string;
+  content: string;
+  estimated_low_amount: number;
+  estimated_high_amount: number;
+  currency: string;
+  confidence_score: number;
+  pricing_factors: string[];
+  district_influence: string | null;
+  mandal_influence: string | null;
+  village_influence: string | null;
+  road_highway_proximity: string | null;
+  market_notes: string | null;
+  disclaimer: string | null;
+  model_name: string | null;
+  is_mock: boolean;
   created_at: string;
   updated_at: string;
 };

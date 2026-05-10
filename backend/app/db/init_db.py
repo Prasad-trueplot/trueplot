@@ -70,6 +70,23 @@ def ensure_local_property_schema() -> None:
         ALTER TABLE property_documents
         ADD COLUMN IF NOT EXISTS admin_review_notes text
         """,
+        "ALTER TABLE property_documents ADD COLUMN IF NOT EXISTS extracted_text text",
+        """
+        ALTER TABLE property_documents
+        ADD COLUMN IF NOT EXISTS ocr_extraction_status varchar(24) NOT NULL DEFAULT 'pending'
+        """,
+        """
+        ALTER TABLE property_documents
+        ADD COLUMN IF NOT EXISTS ocr_extraction_method varchar(40)
+        """,
+        """
+        ALTER TABLE property_documents
+        ADD COLUMN IF NOT EXISTS ocr_extraction_error text
+        """,
+        """
+        ALTER TABLE property_documents
+        ADD COLUMN IF NOT EXISTS ocr_extracted_at timestamptz
+        """,
         """
         DO $$
         BEGIN
@@ -104,6 +121,7 @@ def ensure_local_property_schema() -> None:
         ALTER TABLE ai_summaries
         ADD COLUMN IF NOT EXISTS document_id uuid REFERENCES property_documents(id)
         """,
+        "ALTER TABLE ai_summaries ADD COLUMN IF NOT EXISTS content text",
         "ALTER TABLE ai_summaries ADD COLUMN IF NOT EXISTS english_summary text",
         "ALTER TABLE ai_summaries ADD COLUMN IF NOT EXISTS telugu_summary text",
         "ALTER TABLE ai_summaries ADD COLUMN IF NOT EXISTS ownership_summary text",
