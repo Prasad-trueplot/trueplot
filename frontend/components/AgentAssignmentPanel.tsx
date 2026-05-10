@@ -7,6 +7,7 @@ import type { Agent, PropertyRecord } from "@/lib/types";
 
 import { ErrorBlock, LoadingBlock } from "./StateBlock";
 import { StatusBadge } from "./StatusBadge";
+import { Button, Card, inputStyles } from "./ui";
 
 export function AgentAssignmentPanel({
   property,
@@ -62,8 +63,11 @@ export function AgentAssignmentPanel({
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold">Verified agent</h2>
+    <Card className="p-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+        Human network
+      </p>
+      <h2 className="mt-2 text-xl font-semibold text-slate-950">Verified agent</h2>
       {isLoading ? (
         <div className="mt-4">
           <LoadingBlock label="Loading verified agents" />
@@ -71,7 +75,7 @@ export function AgentAssignmentPanel({
       ) : (
         <>
           {assignedAgent ? (
-            <div className="mt-4 rounded-md bg-slate-50 p-4 text-sm">
+            <div className="mt-4 rounded-lg border border-emerald-100 bg-emerald-50/60 p-4 text-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="font-semibold">
@@ -94,7 +98,7 @@ export function AgentAssignmentPanel({
             <select
               value={selectedAgentId}
               onChange={(event) => setSelectedAgentId(event.target.value)}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              className={inputStyles}
             >
               <option value="">No agent</option>
               {agents.map((agent) => (
@@ -104,26 +108,24 @@ export function AgentAssignmentPanel({
               ))}
             </select>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 onClick={() => saveAssignment(selectedAgentId || null)}
                 disabled={isSaving}
-                className="rounded-md bg-emerald-800 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
               >
                 {isSaving ? "Saving..." : "Assign agent"}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => saveAssignment(null)}
                 disabled={isSaving}
-                className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-60"
+                variant="secondary"
               >
                 Remove
-              </button>
+              </Button>
             </div>
           </div>
         </>
       )}
       {error ? <div className="mt-4"><ErrorBlock message={error} /></div> : null}
-    </div>
+    </Card>
   );
 }
-

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/AppShell";
 import { ErrorBlock } from "@/components/StateBlock";
+import { Button, Card, FieldShell, inputStyles } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import type { UserRole } from "@/lib/types";
 
@@ -37,8 +38,11 @@ export default function SignupPage() {
 
   return (
     <AppShell>
-      <section className="mx-auto max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-semibold">Create account</h1>
+      <Card className="mx-auto max-w-lg p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+          TRUEPLOT access
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-slate-950">Create account</h1>
         <p className="mt-2 text-sm text-slate-600">
           Local MVP signup with simple role selection.
         </p>
@@ -48,27 +52,26 @@ export default function SignupPage() {
           <Field label="Email" name="email" type="email" required />
           <Field label="Phone" name="phone" />
           <Field label="Password" name="password" type="password" required />
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Role</span>
+          <FieldShell label="Role">
             <select
               name="role"
               defaultValue="seller"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className={inputStyles}
             >
               <option value="seller">Seller</option>
               <option value="buyer">Buyer</option>
               <option value="verified_agent">Verified agent</option>
             </select>
-          </label>
-          <button
+          </FieldShell>
+          <Button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            className="w-full"
           >
             {isLoading ? "Creating..." : "Signup"}
-          </button>
+          </Button>
         </form>
-      </section>
+      </Card>
     </AppShell>
   );
 }
@@ -85,15 +88,14 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <label className="block text-sm">
-      <span className="mb-1 block font-medium text-slate-700">{label}</span>
+    <FieldShell label={label}>
       <input
         name={name}
         type={type}
         required={required}
-        className="w-full rounded-md border border-slate-300 px-3 py-2"
+        className={inputStyles}
       />
-    </label>
+    </FieldShell>
   );
 }
 

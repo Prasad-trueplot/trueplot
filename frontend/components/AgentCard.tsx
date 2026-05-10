@@ -3,39 +3,59 @@ import Link from "next/link";
 import type { Agent } from "@/lib/types";
 
 import { StatusBadge } from "./StatusBadge";
+import { Card } from "./ui";
 
 export function AgentCard({ agent }: { agent: Agent }) {
   return (
     <Link
       href={`/agents/${agent.id}`}
-      className="block rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-emerald-700 hover:shadow-md"
+      className="group block"
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold">
-            {agent.agency_name ?? "Independent verified agent"}
-          </h2>
-          <p className="mt-1 text-sm text-slate-600">
-            {agent.service_area ?? "Service area not set"}
-          </p>
+      <Card className="p-5 transition group-hover:-translate-y-0.5 group-hover:border-slate-300 group-hover:shadow-lg group-hover:shadow-slate-900/[0.07]">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Verified agent network
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-950">
+              {agent.agency_name ?? "Independent verified agent"}
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {agent.service_area ?? "Service area not set"}
+            </p>
+          </div>
+          <StatusBadge value={agent.is_verified ? "verified" : "pending"} />
         </div>
-        <StatusBadge value={agent.is_verified ? "verified" : "pending"} />
-      </div>
-      <div className="mt-5 grid gap-3 text-sm sm:grid-cols-3">
-        <div>
-          <p className="text-xs text-slate-500">Districts</p>
-          <p className="font-medium">{agent.district_specialization ?? "Not set"}</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Tag>{agent.district_specialization ?? "District not set"}</Tag>
+          <Tag>{agent.mandal_specialization ?? "Mandal not set"}</Tag>
+          <Tag>{agent.village_specialization ?? "Village not set"}</Tag>
+          <Tag variant="green">{agent.supports_leasing ? "Leasing" : "No leasing"}</Tag>
+          <Tag variant="gold">{agent.supports_nri ? "NRI" : "Local only"}</Tag>
         </div>
-        <div>
-          <p className="text-xs text-slate-500">Leasing</p>
-          <p className="font-medium">{agent.supports_leasing ? "Supported" : "No"}</p>
-        </div>
-        <div>
-          <p className="text-xs text-slate-500">NRI</p>
-          <p className="font-medium">{agent.supports_nri ? "Supported" : "No"}</p>
-        </div>
-      </div>
+      </Card>
     </Link>
   );
 }
 
+function Tag({
+  children,
+  variant = "default",
+}: {
+  children: string;
+  variant?: "default" | "green" | "gold";
+}) {
+  return (
+    <span
+      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
+        variant === "green"
+          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+          : variant === "gold"
+            ? "border-amber-200 bg-amber-50 text-amber-700"
+            : "border-slate-200 bg-slate-50 text-slate-700"
+      }`}
+    >
+      {children}
+    </span>
+  );
+}

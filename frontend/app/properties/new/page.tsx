@@ -6,11 +6,16 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock } from "@/components/StateBlock";
+import {
+  Button,
+  Card,
+  FieldShell,
+  inputStyles,
+  SectionHeader,
+} from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { ListingType, PropertyCreatePayload, PropertyType } from "@/lib/types";
-
-const inputClass = "w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
 
 export default function CreatePropertyPage() {
   const router = useRouter();
@@ -79,69 +84,68 @@ export default function CreatePropertyPage() {
   return (
     <AppShell>
       <AuthGuard roles={["admin", "seller"]}>
-        <div className="max-w-4xl">
-          <h1 className="text-3xl font-semibold">Create property listing</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Add a local MVP listing with AP land record fields.
-          </p>
-        </div>
+        <SectionHeader
+          eyebrow="Seller workspace"
+          title="Create property listing"
+          description="Add AP land record, listing, and geospatial fields for a verified transaction workflow."
+        />
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-6 grid max-w-5xl gap-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
-      >
-        {error ? <ErrorBlock message={error} /> : null}
+        <form onSubmit={handleSubmit} className="mt-6 grid max-w-5xl gap-5">
+          <Card className="grid gap-5 p-5">
+            {error ? <ErrorBlock message={error} /> : null}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field
-            label="Owner UUID"
-            name="owner_id"
-            required
-            defaultValue={sampleOwnerId}
-          />
-          <Field label="Title" name="title" required />
-          <label className="text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Listing type</span>
-            <select name="listing_type" className={inputClass} defaultValue="sale">
-              <option value="sale">Sale</option>
-              <option value="lease">Lease</option>
-              <option value="sale_or_lease">Sale or lease</option>
-            </select>
-          </label>
-          <label className="text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Property type</span>
-            <select name="property_type" className={inputClass} defaultValue="land">
-              <option value="land">Land</option>
-              <option value="apartment">Apartment</option>
-              <option value="house">House</option>
-              <option value="commercial">Commercial</option>
-            </select>
-          </label>
-        </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field
+                label="Owner UUID"
+                name="owner_id"
+                required
+                defaultValue={sampleOwnerId}
+              />
+              <Field label="Title" name="title" required />
+              <FieldShell label="Listing type">
+                <select
+                  name="listing_type"
+                  className={inputStyles}
+                  defaultValue="sale"
+                >
+                  <option value="sale">Sale</option>
+                  <option value="lease">Lease</option>
+                  <option value="sale_or_lease">Sale or lease</option>
+                </select>
+              </FieldShell>
+              <FieldShell label="Property type">
+                <select
+                  name="property_type"
+                  className={inputStyles}
+                  defaultValue="land"
+                >
+                  <option value="land">Land</option>
+                  <option value="apartment">Apartment</option>
+                  <option value="house">House</option>
+                  <option value="commercial">Commercial</option>
+                </select>
+              </FieldShell>
+            </div>
 
-        <label className="text-sm">
-          <span className="mb-1 block font-medium text-slate-700">Description</span>
-          <textarea name="description" rows={4} className={inputClass} />
-        </label>
+            <FieldShell label="Description">
+              <textarea name="description" rows={4} className={inputStyles} />
+            </FieldShell>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Field label="District" name="district" />
-          <Field label="Mandal" name="mandal" />
-          <Field label="Village" name="village" />
-          <Field label="Survey number" name="survey_number" />
-          <Field label="Extent sq yd" name="extent_sq_yards" type="number" />
-          <Field label="Address line" name="address_line" />
-          <Field label="Latitude" name="latitude" type="number" step="any" />
-          <Field label="Longitude" name="longitude" type="number" step="any" />
-        </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Field label="District" name="district" />
+              <Field label="Mandal" name="mandal" />
+              <Field label="Village" name="village" />
+              <Field label="Survey number" name="survey_number" />
+              <Field label="Extent sq yd" name="extent_sq_yards" type="number" />
+              <Field label="Address line" name="address_line" />
+              <Field label="Latitude" name="latitude" type="number" step="any" />
+              <Field label="Longitude" name="longitude" type="number" step="any" />
+            </div>
 
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-        >
-          {isSaving ? "Creating..." : "Create listing"}
-        </button>
+            <Button type="submit" disabled={isSaving} className="w-fit">
+              {isSaving ? "Creating..." : "Create listing"}
+            </Button>
+          </Card>
         </form>
       </AuthGuard>
     </AppShell>
@@ -164,8 +168,7 @@ function Field({
   defaultValue?: string;
 }) {
   return (
-    <label className="text-sm">
-      <span className="mb-1 block font-medium text-slate-700">{label}</span>
+    <FieldShell label={label}>
       <input
         key={defaultValue}
         name={name}
@@ -173,9 +176,9 @@ function Field({
         required={required}
         step={step}
         defaultValue={defaultValue}
-        className={inputClass}
+        className={inputStyles}
       />
-    </label>
+    </FieldShell>
   );
 }
 

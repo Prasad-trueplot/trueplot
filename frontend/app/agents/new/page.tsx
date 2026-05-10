@@ -6,11 +6,16 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock } from "@/components/StateBlock";
+import {
+  Button,
+  Card,
+  FieldShell,
+  inputStyles,
+  SectionHeader,
+} from "@/components/ui";
 import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { AgentCreatePayload } from "@/lib/types";
-
-const inputClass = "w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
 
 export default function NewAgentPage() {
   const router = useRouter();
@@ -67,43 +72,43 @@ export default function NewAgentPage() {
   return (
     <AppShell>
       <AuthGuard roles={["admin", "verified_agent"]}>
-        <h1 className="text-3xl font-semibold">Agent onboarding</h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Create a local MVP agent profile for admin verification. KYC provider
-          integration is intentionally not included.
-        </p>
+        <SectionHeader
+          eyebrow="Verified agent network"
+          title="Agent onboarding"
+          description="Create a local MVP agent profile for admin verification. KYC provider integration is intentionally not included."
+        />
 
-      <form
-        onSubmit={handleSubmit}
-        className="mt-6 grid max-w-5xl gap-5 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
-      >
-        {error ? <ErrorBlock message={error} /> : null}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field label="User UUID" name="user_id" required defaultValue={sampleUserId} />
-          <Field label="License number" name="license_number" />
-          <Field label="Agency name" name="agency_name" />
-          <Field label="Service area" name="service_area" />
-          <Field label="District specialization" name="district_specialization" />
-          <Field label="Mandal specialization" name="mandal_specialization" />
-          <Field label="Village specialization" name="village_specialization" />
-        </div>
-        <div className="flex flex-wrap gap-5">
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-            <input type="checkbox" name="supports_leasing" />
-            Leasing specialist
-          </label>
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-            <input type="checkbox" name="supports_nri" />
-            NRI specialist
-          </label>
-        </div>
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
-        >
-          {isSaving ? "Creating..." : "Create agent"}
-        </button>
+        <form onSubmit={handleSubmit} className="mt-6 grid max-w-5xl gap-5">
+          <Card className="grid gap-5 p-5">
+            {error ? <ErrorBlock message={error} /> : null}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field
+                label="User UUID"
+                name="user_id"
+                required
+                defaultValue={sampleUserId}
+              />
+              <Field label="License number" name="license_number" />
+              <Field label="Agency name" name="agency_name" />
+              <Field label="Service area" name="service_area" />
+              <Field label="District specialization" name="district_specialization" />
+              <Field label="Mandal specialization" name="mandal_specialization" />
+              <Field label="Village specialization" name="village_specialization" />
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <label className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
+                <input type="checkbox" name="supports_leasing" />
+                Leasing specialist
+              </label>
+              <label className="flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">
+                <input type="checkbox" name="supports_nri" />
+                NRI specialist
+              </label>
+            </div>
+            <Button type="submit" disabled={isSaving} className="w-fit">
+              {isSaving ? "Creating..." : "Create agent"}
+            </Button>
+          </Card>
         </form>
       </AuthGuard>
     </AppShell>
@@ -122,16 +127,15 @@ function Field({
   defaultValue?: string;
 }) {
   return (
-    <label className="text-sm">
-      <span className="mb-1 block font-medium text-slate-700">{label}</span>
+    <FieldShell label={label}>
       <input
         key={defaultValue}
         name={name}
         required={required}
         defaultValue={defaultValue}
-        className={inputClass}
+        className={inputStyles}
       />
-    </label>
+    </FieldShell>
   );
 }
 

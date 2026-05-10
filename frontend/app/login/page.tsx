@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { AppShell } from "@/components/AppShell";
 import { ErrorBlock } from "@/components/StateBlock";
+import { Button, Card, FieldShell, inputStyles } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -34,12 +35,15 @@ export default function LoginPage() {
 
   return (
     <AppShell>
-      <section className="mx-auto max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-semibold">Login</h1>
+      <Card className="mx-auto max-w-md p-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+          Secure workspace
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold text-slate-950">Login</h1>
         <p className="mt-2 text-sm text-slate-600">
           Demo users use password <span className="font-semibold">trueplot123</span>.
         </p>
-        <div className="mt-4 rounded-md bg-slate-50 p-3 text-xs text-slate-600">
+        <div className="mt-4 rounded-lg border border-slate-100 bg-slate-50 p-3 text-xs leading-6 text-slate-600">
           Admin: admin@trueplot.local
           <br />
           Seller: owner@example.com
@@ -50,33 +54,31 @@ export default function LoginPage() {
         </div>
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           {error ? <ErrorBlock message={error} /> : null}
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Email</span>
+          <FieldShell label="Email">
             <input
               name="email"
               type="email"
               required
               defaultValue="admin@trueplot.local"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className={inputStyles}
             />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block font-medium text-slate-700">Password</span>
+          </FieldShell>
+          <FieldShell label="Password">
             <input
               name="password"
               type="password"
               required
               defaultValue="trueplot123"
-              className="w-full rounded-md border border-slate-300 px-3 py-2"
+              className={inputStyles}
             />
-          </label>
-          <button
+          </FieldShell>
+          <Button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            className="w-full"
           >
             {isLoading ? "Signing in..." : "Login"}
-          </button>
+          </Button>
         </form>
         <p className="mt-4 text-sm text-slate-600">
           No account?{" "}
@@ -84,8 +86,7 @@ export default function LoginPage() {
             Create one
           </Link>
         </p>
-      </section>
+      </Card>
     </AppShell>
   );
 }
-

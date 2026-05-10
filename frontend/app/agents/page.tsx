@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { AgentCard } from "@/components/AgentCard";
 import { AppShell } from "@/components/AppShell";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
+import { ButtonLink, SectionHeader } from "@/components/ui";
 import { api } from "@/lib/api";
 import type { Agent } from "@/lib/types";
 
@@ -32,21 +32,12 @@ export default function AgentsPage() {
 
   return (
     <AppShell>
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold">Verified agents</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Onboard AP land specialists for sale, lease, NRI, district, mandal,
-            and village workflows.
-          </p>
-        </div>
-        <Link
-          href="/agents/new"
-          className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"
-        >
-          Onboard agent
-        </Link>
-      </div>
+      <SectionHeader
+        eyebrow="Verified field network"
+        title="Agents"
+        description="Onboard AP land specialists for sale, lease, NRI, district, mandal, and village workflows."
+        action={<ButtonLink href="/agents/new">Onboard agent</ButtonLink>}
+      />
 
       <div className="mt-6 grid gap-4">
         {isLoading ? (
@@ -64,4 +55,3 @@ export default function AgentsPage() {
     </AppShell>
   );
 }
-

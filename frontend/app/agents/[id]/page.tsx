@@ -8,6 +8,7 @@ import { AppShell } from "@/components/AppShell";
 import { AuthGuard } from "@/components/AuthGuard";
 import { ErrorBlock, LoadingBlock } from "@/components/StateBlock";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Button, Card, DetailTile } from "@/components/ui";
 import { api } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import type { Agent } from "@/lib/types";
@@ -61,11 +62,11 @@ export default function AgentDetailPage() {
           <ErrorBlock message={error} />
         </div>
       ) : agent ? (
-        <section className="mt-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <Card className="mt-5 p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
               <StatusBadge value={agent.is_verified ? "verified" : "pending"} />
-              <h1 className="mt-4 text-3xl font-semibold">
+              <h1 className="mt-4 text-4xl font-semibold text-slate-950">
                 {agent.agency_name ?? "Independent agent"}
               </h1>
               <p className="mt-2 text-sm text-slate-600">
@@ -73,35 +74,26 @@ export default function AgentDetailPage() {
               </p>
             </div>
             <AuthGuard roles={["admin"]}>
-              <button
+              <Button
                 onClick={approveAgent}
                 disabled={isSaving || agent.is_verified}
-                className="w-fit rounded-md bg-emerald-800 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                className="w-fit"
               >
                 {agent.is_verified ? "Verified" : isSaving ? "Approving..." : "Approve agent"}
-              </button>
+              </Button>
             </AuthGuard>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-3">
-            <Detail label="License" value={agent.license_number} />
-            <Detail label="Districts" value={agent.district_specialization} />
-            <Detail label="Mandals" value={agent.mandal_specialization} />
-            <Detail label="Villages" value={agent.village_specialization} />
-            <Detail label="Leasing" value={agent.supports_leasing ? "Supported" : "No"} />
-            <Detail label="NRI" value={agent.supports_nri ? "Supported" : "No"} />
-            <Detail label="Created" value={formatDate(agent.created_at)} />
+            <DetailTile label="License" value={agent.license_number ?? "Not set"} />
+            <DetailTile label="Districts" value={agent.district_specialization ?? "Not set"} />
+            <DetailTile label="Mandals" value={agent.mandal_specialization ?? "Not set"} />
+            <DetailTile label="Villages" value={agent.village_specialization ?? "Not set"} />
+            <DetailTile label="Leasing" value={agent.supports_leasing ? "Supported" : "No"} />
+            <DetailTile label="NRI" value={agent.supports_nri ? "Supported" : "No"} />
+            <DetailTile label="Created" value={formatDate(agent.created_at)} />
           </div>
-        </section>
+        </Card>
       ) : null}
     </AppShell>
-  );
-}
-
-function Detail({ label, value }: { label: string; value: string | null }) {
-  return (
-    <div className="rounded-md bg-slate-50 p-3">
-      <p className="text-xs font-semibold uppercase text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-medium">{value ?? "Not set"}</p>
-    </div>
   );
 }

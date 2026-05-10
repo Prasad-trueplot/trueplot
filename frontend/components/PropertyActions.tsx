@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { api } from "@/lib/api";
 import type { PropertyRecord } from "@/lib/types";
+import { Button, Card } from "./ui";
 
 export function PropertyActions({
   property,
@@ -33,45 +34,46 @@ export function PropertyActions({
   }
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="text-lg font-semibold">Admin actions</h2>
+    <Card className="p-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+        Moderation
+      </p>
+      <h2 className="mt-2 text-xl font-semibold text-slate-950">Admin actions</h2>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button
+        <Button
           onClick={() =>
             runAction("approve", () =>
               api.updatePropertyStatus(property.id, "active"),
             )
           }
           disabled={busyAction !== null}
-          className="rounded-md bg-emerald-800 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60"
         >
           {busyAction === "approve" ? "Approving..." : "Approve listing"}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() =>
             runAction("verify", () =>
               api.updatePropertyVerification(property.id, true, "verified"),
             )
           }
           disabled={busyAction !== null}
-          className="rounded-md border border-emerald-800 px-3 py-2 text-sm font-semibold text-emerald-900 disabled:opacity-60"
+          variant="secondary"
         >
           {busyAction === "verify" ? "Verifying..." : "Mark verified"}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() =>
             runAction("pause", () =>
               api.updatePropertyStatus(property.id, "paused"),
             )
           }
           disabled={busyAction !== null}
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 disabled:opacity-60"
+          variant="ghost"
         >
           Pause listing
-        </button>
+        </Button>
       </div>
       {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
-    </div>
+    </Card>
   );
 }
-
