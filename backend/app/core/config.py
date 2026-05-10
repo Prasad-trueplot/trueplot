@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     frontend_origin: str = "http://localhost:3000"
+    frontend_origin_regex: str = r"https://.*\.vercel\.app"
     database_url: str = (
         "postgresql+psycopg://trueplot_user:trueplot_pass@localhost:5432/trueplot"
     )
