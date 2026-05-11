@@ -226,6 +226,34 @@ Backend syntax check:
 env PYTHONPYCACHEPREFIX=/private/tmp/trueplot_pycache python3 -m compileall backend/app backend/scripts
 ```
 
+## CI Validation
+
+GitHub Actions runs the same MVP checks on every `push` and `pull_request`:
+
+- Frontend CI:
+  - `npm install`
+  - `npm run typecheck`
+  - `npm run lint`
+  - `npm run build`
+- Backend CI:
+  - `pip install -r requirements.txt`
+  - `pip install pytest`
+  - `python -m compileall app`
+  - `python -c "from app.main import app; print(app.title)"`
+  - `python -m pytest -q`
+- Docker Validation:
+  - `docker build -t trueplot-backend ./backend`
+  - `docker build -t trueplot-frontend ./frontend`
+
+Local equivalents:
+
+```bash
+cd frontend && npm install && npm run typecheck && npm run lint && npm run build
+cd backend && pip install -r requirements.txt && pip install pytest && python -m compileall app && python -c "from app.main import app; print(app.title)" && python -m pytest -q
+docker build -t trueplot-backend ./backend
+docker build -t trueplot-frontend ./frontend
+```
+
 ## Documentation
 
 - [Architecture](docs/architecture.md)
@@ -243,6 +271,9 @@ env PYTHONPYCACHEPREFIX=/private/tmp/trueplot_pycache python3 -m compileall back
 - If the frontend cannot reach the backend, confirm `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000`.
 - If uploads fail, confirm `python-multipart` is installed in the backend image by rebuilding: `docker compose build backend`.
 - If database schema looks stale, run the local schema setup or reset the volume.
+- If GitHub Actions fails on the frontend job, run the frontend validation commands locally from `frontend/`.
+- If GitHub Actions fails on the backend job, run the backend validation commands locally from `backend/`.
+- If Docker validation fails in CI, confirm both `backend/Dockerfile` and `frontend/Dockerfile` still build with the current dependency set.
 
 ## Future Roadmap
 
